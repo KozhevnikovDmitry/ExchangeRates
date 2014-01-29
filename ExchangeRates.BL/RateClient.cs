@@ -9,6 +9,11 @@ namespace ExchangeRates.BL
 {
     internal class AppId
     {
+        public AppId(string appId)
+        {
+            Value = appId;
+        }
+
         public string Value { get; set; }
     }
 
@@ -19,7 +24,6 @@ namespace ExchangeRates.BL
         public RateClient(AppId appId)
         {
             _appId = appId;
-            _appId = new AppId { Value = "9ec36de63b284d7dbc50f8a7d278ebfd" };
         }
 
         public RateResponce GetRate(DateTime date)

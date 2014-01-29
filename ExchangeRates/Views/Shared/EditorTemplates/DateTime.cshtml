@@ -1,0 +1,2 @@
+﻿@model DateTime?
+@Html.TextBoxFor(m => m, new { @class = "datepicker", @Value = Model.HasValue ? Model.Value.ToString("d") : null })
