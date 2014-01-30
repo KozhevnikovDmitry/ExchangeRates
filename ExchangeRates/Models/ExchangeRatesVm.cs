@@ -28,13 +28,16 @@ namespace ExchangeRates.Models
 
         public SelectList CurrencyList { get; set; }
 
+        [Display(Name = "Start date")]
         [Required(ErrorMessage = "Enter currency")]
         public Currency Currency { get; set; }
 
+        [Display(Name = "End date")]
         [Required(ErrorMessage = "Enter start date")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}")]
         public DateTime? StartDate { get; set; }
 
+        [Display(Name = "Currency")]
         [Required(ErrorMessage = "Enter end date")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}")]
         public DateTime? EndDate { get; set; }
@@ -106,7 +109,7 @@ namespace ExchangeRates.Models
                 string result = string.Empty;
                 foreach (var rate in Rates)
                 {
-                    result += string.Format("['{0}',{1}],", rate.Stamp.ToString("yyyy-MM-dd"), rate.Value.ToString("F").Replace(',','.'));
+                    result += string.Format("['{0}',{1}],", rate.Stamp.ToString("yyyy-MM-dd"), rate.Value.ToString("F6").Replace(',','.'));
                 }
 
                 return result.Substring(0, result.Length - 1);

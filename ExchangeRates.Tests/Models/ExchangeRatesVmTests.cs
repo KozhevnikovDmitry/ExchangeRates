@@ -39,7 +39,7 @@ namespace ExchangeRates.Tests.Models
             // Arrange
             var rate1 = Mock.Of<Rate>();
             var rate2 = Mock.Of<Rate>();
-            var exchangeRates = 
+            var exchangeRates =
                 Mock.Of<IExchangeRates>(t =>
                     t.GetRates(Currency.GBP, new DateTime(2000, 1, 1), new DateTime(2000, 1, 2)) == new[] { rate1, rate2 });
             var vm = new ExchangeRatesVm(exchangeRates)
@@ -163,6 +163,70 @@ namespace ExchangeRates.Tests.Models
             // Assert
             Assert.False(vm.IsSuccesfull);
             Assert.AreEqual(vm.ErrorMessage, "Error: End date must have value");
+        }
+
+        [Test]
+        public void GetDays_EmptyWhenRatesIsNull_Test()
+        {
+            // Arrange
+            var exchangeRates = Mock.Of<IExchangeRates>();
+            var vm = new ExchangeRatesVm(exchangeRates);
+
+            // Act
+            var days = vm.GetDays();
+
+            // Assert
+            Assert.IsEmpty(days);
+        }
+
+        [Test]
+        public void GetDays_Test()
+        {
+            // Arrange
+            var rate1 = Mock.Of<Rate>(t => t.Stamp == new DateTime(2001, 1, 1));
+            var rate2 = Mock.Of<Rate>(t => t.Stamp == new DateTime(2002, 2, 2));
+            var vm = new ExchangeRatesVm(Mock.Of<IExchangeRates>())
+            {
+                Rates = new[] { rate1, rate2 }
+            };
+
+            // Act
+            var days = vm.GetDays();
+
+            // Assert
+            Assert.AreEqual(days, "'2001-01-01','2002-02-02'");
+        }
+
+        [Test]
+        public void GetRatesData_EmptyWhenRatesIsNull_Test()
+        {
+            // Arrange
+            var exchangeRates = Mock.Of<IExchangeRates>();
+            var vm = new ExchangeRatesVm(exchangeRates);
+
+            // Act
+            var ratesData = vm.GetRatesData();
+
+            // Assert
+            Assert.IsEmpty(ratesData);
+        }
+
+        [Test]
+        public void GetRatesData_Test()
+        {
+            // Arrange
+            var rate1 = Mock.Of<Rate>(t => t.Stamp == new DateTime(2001, 1, 1) && t.Value == 123.456789);
+            var rate2 = Mock.Of<Rate>(t => t.Stamp == new DateTime(2002, 2, 2) && t.Value == 987.654321);
+            var vm = new ExchangeRatesVm(Mock.Of<IExchangeRates>())
+            {
+                Rates = new[] { rate1, rate2 }
+            };
+
+            // Act
+            var ratesData = vm.GetRatesData();
+
+            // Assert
+            Assert.AreEqual(ratesData, "['2001-01-01',123.456789],['2002-02-02',987.654321]");
         }
     }
 }
