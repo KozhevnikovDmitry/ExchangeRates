@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ExchangeRetes.DM
+﻿namespace ExchangeRetes.DM
 {
     public enum Currency
     {

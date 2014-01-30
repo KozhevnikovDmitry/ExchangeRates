@@ -20,8 +20,9 @@ namespace ExchangeRates
         }
     }
 
-    internal class UiModule : Module
+    public class UiModule : Module
     {
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ExchangeRatesVm>().AsSelf();

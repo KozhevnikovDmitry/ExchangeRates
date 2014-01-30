@@ -58,7 +58,9 @@
   <ItemGroup>
     <Compile Include="Exceptions\BlModule.cs" />
     <Compile Include="Exceptions\EndDateIsEarilerThanStartDateException.cs" />
+    <Compile Include="Exceptions\GetCachedRepositoryException.cs" />
     <Compile Include="Exceptions\GetRatesFromServiceException.cs" />
+    <Compile Include="Exceptions\CacheRepositoryException.cs" />
     <Compile Include="ExchangeRates.cs" />
     <Compile Include="Exceptions\GetRatesException.cs" />
     <Compile Include="Interface\IExchangeRates.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExchangeRates.BL.Exceptions;
 using ExchangeRates.DA;
 using ExchangeRetes.DM;
 using Moq;
@@ -108,6 +109,34 @@ namespace ExchangeRates.BL.Tests
         }
 
         [Test]
+        public void GetCached_ApplicationException_Test()
+        {
+            // Arrange
+            var exception = new ApplicationException();
+            var session = new Mock<ISession>();
+            session.Setup(t => t.Query<Rate>()).Throws(exception);
+            var repository = new RateReporitory();
+
+            // Assert
+            var ex = Assert.Throws<ApplicationException>(() => repository.GetCached(session.Object, Currency.RUB, DateTime.Today, DateTime.Today));
+            Assert.AreEqual(ex, exception);
+        }
+
+        [Test]
+        public void GetCached_UnexpectedException_Test()
+        {
+            // Arrange
+            var exception = new Exception();
+            var session = new Mock<ISession>();
+            session.Setup(t => t.Query<Rate>()).Throws(exception);
+            var repository = new RateReporitory();
+
+            // Assert
+            var ex = Assert.Throws<GetCachedRepositoryException>(() => repository.GetCached(session.Object, Currency.RUB, DateTime.Today, DateTime.Today));
+            Assert.AreEqual(ex.InnerException, exception);
+        }
+
+        [Test]
         public void Cache_Test()
         {
             // Arrange
@@ -127,7 +156,7 @@ namespace ExchangeRates.BL.Tests
         {
             // Arrange
             var repository = new RateReporitory();
-            
+
             // Assert
             Assert.Throws<ArgumentNullException>(() => repository.Cache(null, Mock.Of<IEnumerable<Rate>>()));
         }
@@ -140,6 +169,34 @@ namespace ExchangeRates.BL.Tests
 
             // Assert
             Assert.Throws<ArgumentNullException>(() => repository.Cache(Mock.Of<ISession>(), null));
+        }
+
+        [Test]
+        public void Cache_ApplicationException_Test()
+        {
+            // Arrange
+            var exception = new ApplicationException();
+            var session = new Mock<ISession>();
+            session.Setup(t => t.Save<Rate>(It.IsAny<Rate>())).Throws(exception);
+            var repository = new RateReporitory();
+
+            // Assert
+            var ex = Assert.Throws<ApplicationException>(() => repository.Cache(session.Object, new[] { Mock.Of<Rate>() }));
+            Assert.AreEqual(ex, exception);
+        }
+
+        [Test]
+        public void Cache_UnexpectedException_Test()
+        {
+            // Arrange
+            var exception = new Exception();
+            var session = new Mock<ISession>();
+            session.Setup(t => t.Save<Rate>(It.IsAny<Rate>())).Throws(exception);
+            var repository = new RateReporitory();
+
+            // Assert
+            var ex = Assert.Throws<CacheRepositoryException>(() => repository.Cache(session.Object, new[] { Mock.Of<Rate>() }));
+            Assert.AreEqual(ex.InnerException, exception);
         }
     }
 }

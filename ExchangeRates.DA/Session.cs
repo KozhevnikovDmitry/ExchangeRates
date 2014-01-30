@@ -6,6 +6,12 @@ namespace ExchangeRates.DA
 {
     internal class Session : DbContext, ISession
     {
+        public Session()
+            : base("LocalDBTestContext")
+        {
+            
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Rate>()

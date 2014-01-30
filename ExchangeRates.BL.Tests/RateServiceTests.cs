@@ -33,6 +33,7 @@ namespace ExchangeRates.BL.Tests
             // Assert
             Assert.AreEqual(result.Single(), rate);
         }
+
         [Test]
         public void GetRates_ApplicationException_Test()
         {
@@ -62,7 +63,5 @@ namespace ExchangeRates.BL.Tests
                     () => rateService.GetRates(Currency.RUB, new[] { DateTime.Today }));
             Assert.AreEqual(ex.InnerException, exception);
         }
-
-
     }
 }
