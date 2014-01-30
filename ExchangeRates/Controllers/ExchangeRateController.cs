@@ -21,6 +21,11 @@ namespace ExchangeRates.Controllers
             }
 
             exchangeRatesVm.GetRates();
+            if (!exchangeRatesVm.IsSuccesfull)
+            {
+                ModelState.AddModelError(string.Empty, exchangeRatesVm.ErrorMessage);
+                exchangeRatesVm.Rates = null;
+            }
             return View("Index", exchangeRatesVm);
         }
 
