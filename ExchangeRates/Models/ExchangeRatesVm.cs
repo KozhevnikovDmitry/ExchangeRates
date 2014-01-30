@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
+using ExchangeRates.BL.Exceptions;
 using ExchangeRates.BL.Interface;
 using ExchangeRetes.DM;
 
@@ -14,7 +15,11 @@ namespace ExchangeRates.Models
 
         public ExchangeRatesVm(IExchangeRates exchangeRates)
         {
+            if (exchangeRates == null) 
+                throw new ArgumentNullException("exchangeRates");
             _exchangeRates = exchangeRates;
+            IsSuccesfull = true;
+            ErrorMessage = string.Empty;
             Currency = Currency.RUB;
             StartDate = DateTime.Today.AddDays(-10);
             EndDate = DateTime.Today;
@@ -35,10 +40,49 @@ namespace ExchangeRates.Models
         public DateTime? EndDate { get; set; }
 
         public IList<Rate> Rates { get; set; }
+        public bool IsSuccesfull { get; set; }
+        public string ErrorMessage { get; set; }
 
         public void GetRates()
         {
-            Rates = _exchangeRates.GetRates(Currency, StartDate.Value, EndDate.Value);
+            try
+            {
+                if (!StartDate.HasValue)
+                {
+                    throw new ApplicationException("Start date must have value");
+                }
+
+                if (!EndDate.HasValue)
+                {
+                    throw new ApplicationException("End date must have value");
+                }
+
+                Rates = _exchangeRates.GetRates(Currency, StartDate.Value, EndDate.Value);
+                IsSuccesfull = true;
+                ErrorMessage = string.Empty;
+            }
+            catch (EndDateIsEarilerThanStartDateException)
+            {
+                IsSuccesfull = false;
+                ErrorMessage = "Mistyping: End date is earlier than start date.";
+            }
+            catch (SelectedPeriodExceedTwoMonthsException)
+            {
+                IsSuccesfull = false;
+                ErrorMessage = "Mistyping: Selected date interval exceeds two months.";
+            }
+            catch (ApplicationException ex)
+            {
+                IsSuccesfull = false;
+                ErrorMessage = string.Format("Error: {0}", ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                IsSuccesfull = false;
+                ErrorMessage = string.Format("Unexpected error: {0}", ex);
+
+            }
         }
 
         public string GetDays()
