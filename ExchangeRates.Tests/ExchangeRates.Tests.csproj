@@ -67,6 +67,7 @@
     <Compile Include="IntegrationRoot.cs" />
     <Compile Include="IntegrationSession.cs" />
     <Compile Include="IntegrationSessionFactory.cs" />
+    <Compile Include="Models\ExchangeRatesVmTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

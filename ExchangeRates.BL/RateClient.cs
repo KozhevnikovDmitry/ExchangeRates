@@ -28,24 +28,17 @@ namespace ExchangeRates.BL
 
         public RateResponce GetRate(DateTime date)
         {
-            var task = Get(date.ToString("yyyy-MM-dd"));
-            task.Wait();
-            return task.Result;
-        }
-
-        private async Task<RateResponce> Get(string date)
-        {
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("https://openexchangerates.org/");
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var uri = string.Format("api/historical/{0}.json?app_id={1}", date, _appId.Value);
-                HttpResponseMessage response = await client.GetAsync(uri);
+                var uri = string.Format("api/historical/{0}.json?app_id={1}", date.ToString("yyyy-MM-dd"), _appId.Value);
+                HttpResponseMessage response = client.GetAsync(uri).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    var json = await response.Content.ReadAsStreamAsync();
+                    var json = response.Content.ReadAsStreamAsync().Result;
                     return (RateResponce)new DataContractJsonSerializer(typeof(RateResponce)).ReadObject(json);
                 }
             }

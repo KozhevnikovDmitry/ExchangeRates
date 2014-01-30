@@ -73,7 +73,7 @@ namespace ExchangeRates.Tests
 
             using (var session = _root.GetSessionFactory().New())
             {
-                var date = exchangeRatesVm.StartDate;
+                var date = exchangeRatesVm.StartDate.Value;
                 while (date <= exchangeRatesVm.EndDate)
                 {
                     session.Save(new Rate
@@ -111,7 +111,7 @@ namespace ExchangeRates.Tests
 
             using (var session = _root.GetSessionFactory().New())
             {
-                var date = exchangeRatesVm.StartDate;
+                var date = exchangeRatesVm.StartDate.Value;
                 while (date <= new DateTime(2000, 01, 15))
                 {
                     session.Save(new Rate

@@ -7,17 +7,56 @@
 {
     <h4>Exchange Rate</h4>
     <fieldset class="form-horizontal">
-        <div>
+        <div class="pull-left form-edit">
             @Html.LabelFor(m => m.StartDate)
             @Html.EditorFor(m => m.StartDate)
             @Html.ValidationMessageFor(m => m.StartDate)
         </div>
-        <div>
+        <div class="pull-left form-edit">
             @Html.LabelFor(m => m.EndDate)
             @Html.EditorFor(m => m.EndDate)
             @Html.ValidationMessageFor(m => m.EndDate)
         </div>
+        <div class="pull-left form-edit">
+            @Html.LabelFor(m => m.Currency)
+            @Html.DropDownListFor(m => m.Currency, Model.CurrencyList)
+            @Html.ValidationMessageFor(m => m.Currency)
+        </div>
+        <div class="clearfix"></div>
     </fieldset>
     @Html.ValidationSummary(true)
-    <button type="submit" class="btn">Show</button>
+    <button type="submit" class="btn btn-primary">Show</button>
 }
+
+@if (Model.Rates != null)
+{
+    <script type='text/javascript'>
+        $(window).load(function () {
+            $(function () {
+                $('#container').highcharts({
+                    title: {
+                        text: '@Model.Currency.ToString()/USD rates'
+                    },
+                    xAxis: {
+                        categories: [@Html.Raw(Model.GetDays())]
+                        },
+                    yAxis: {
+                        title: {
+                            text: 'USD'
+                        }
+                    },
+                    series: [{
+                        name: '@Model.Currency.ToString()',
+                            data: [@Html.Raw(Model.GetRatesData())]
+                        }]
+                });
+            });
+
+        });
+    </script>
+}
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="width: 100%; height: 400px;"></div>
