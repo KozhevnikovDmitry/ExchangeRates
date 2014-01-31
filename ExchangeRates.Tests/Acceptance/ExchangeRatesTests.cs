@@ -1,19 +1,20 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using ExchangeRetes.DM;
 using NUnit.Framework;
 
-namespace ExchangeRates.Tests
+namespace ExchangeRates.Tests.Acceptance
 {
     [TestFixture]
     public class ExchangeRatesTests
     {
-        private IntegrationRoot _root;
+        private AcceptanceRoot _root;
 
         [TestFixtureSetUp]
         public void FixtureSetup()
         {
-            _root = new IntegrationRoot();
+            _root = new AcceptanceRoot();
             _root.Register();
         }
 
@@ -23,11 +24,19 @@ namespace ExchangeRates.Tests
             _root.Release();
         }
 
+        //[SetUp]
+        //public void SetUp()
+        //{
+        //    using (var session = _root.GetSessionFactory().New())
+        //    {
+        //        session.Query<Rate>().ToList();
+        //    }
+        //}
+
         [TearDown]
         public void TearDown()
         {
-            _root.GetSessionFactory().IntegrationSession.DoDispose();
-            _root.GetSessionFactory().IntegrationSession = null;
+            File.Delete("ExcnangeRates.sdf");
         }
 
         [Test]
@@ -50,25 +59,28 @@ namespace ExchangeRates.Tests
                 Assert.AreEqual(rate.Stamp.Date, DateTime.Today.AddMonths(-1).AddDays(i), "Rate stamp is in last month");
                 Assert.AreNotEqual(rate.Value, 0, "Rate value is not equal zero");
             }
-
-            var cache = _root.GetSessionFactory().IntegrationSession.Query<Rate>().ToList();
-            for (int i = 0; i < cache.Count; i++)
+            using (var session = _root.GetSessionFactory().New())
             {
-                var rate = exchangeRatesVm.Rates[i];
-                var cachedRate = cache[i];
-                Assert.AreEqual(rate.Currency, cachedRate.Currency, "Rate currency is equal cached rate currency");
-                Assert.AreEqual(rate.Stamp.Date, cachedRate.Stamp.Date, "Rate stamp is equal cached rate stamp");
-                Assert.AreEqual(rate.Value, cachedRate.Value, "Rate value is equal cached rate value");
+                var cache = session.Query<Rate>().ToList();
+
+                for (int i = 0; i < cache.Count; i++)
+                {
+                    var rate = exchangeRatesVm.Rates[i];
+                    var cachedRate = cache[i];
+                    Assert.AreEqual(rate.Currency, cachedRate.Currency, "Rate currency is equal cached rate currency");
+                    Assert.AreEqual(rate.Stamp.Date, cachedRate.Stamp.Date, "Rate stamp is equal cached rate stamp");
+                    Assert.AreEqual(rate.Value, cachedRate.Value, "Rate value is equal cached rate value");
+                }
             }
         }
-        
+
         [Test]
         public void GetRatesToVm_CacheIsEnough_Test()
         {
             // Arrange
             var exchangeRatesVm = _root.Resolve();
             exchangeRatesVm.Currency = Currency.RUB;
-            exchangeRatesVm.StartDate = new DateTime(2000, 01,01);
+            exchangeRatesVm.StartDate = new DateTime(2000, 01, 01);
             exchangeRatesVm.EndDate = new DateTime(2000, 02, 01);
 
             using (var session = _root.GetSessionFactory().New())

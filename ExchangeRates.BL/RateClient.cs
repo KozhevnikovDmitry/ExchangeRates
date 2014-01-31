@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization.Json;
-using System.Threading.Tasks;
 using ExchangeRates.BL.Interface;
 
 namespace ExchangeRates.BL

@@ -5,7 +5,7 @@ namespace ExchangeRates.BL.Exceptions
     public class GetRatesException : ApplicationException
     {
         public GetRatesException(Exception ex)
-            : base("UnexpectedExcetion on EchangeRates.GetRates", ex)
+            : base("Error: fail to get rates (unexpected error on ExchangeRates.GetRates)", ex)
         {
 
         }

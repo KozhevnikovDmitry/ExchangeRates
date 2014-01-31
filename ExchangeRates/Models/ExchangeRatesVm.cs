@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Web.Mvc;
-using ExchangeRates.BL.Exceptions;
 using ExchangeRates.BL.Interface;
 using ExchangeRetes.DM;
 
@@ -52,32 +50,22 @@ namespace ExchangeRates.Models
             {
                 if (!StartDate.HasValue)
                 {
-                    throw new ApplicationException("Start date must have value");
+                    throw new ApplicationException("Error: Start date must have value");
                 }
 
                 if (!EndDate.HasValue)
                 {
-                    throw new ApplicationException("End date must have value");
+                    throw new ApplicationException("Error: End date must have value");
                 }
 
                 Rates = _exchangeRates.GetRates(Currency, StartDate.Value, EndDate.Value);
                 IsSuccesfull = true;
                 ErrorMessage = string.Empty;
             }
-            catch (EndDateIsEarilerThanStartDateException)
-            {
-                IsSuccesfull = false;
-                ErrorMessage = "Mistyping: End date is earlier than start date.";
-            }
-            catch (SelectedPeriodExceedTwoMonthsException)
-            {
-                IsSuccesfull = false;
-                ErrorMessage = "Mistyping: Selected date interval exceeds two months.";
-            }
             catch (ApplicationException ex)
             {
                 IsSuccesfull = false;
-                ErrorMessage = string.Format("Error: {0}", ex.Message);
+                ErrorMessage = string.Format(ex.Message);
 
             }
             catch (Exception ex)
@@ -115,17 +103,6 @@ namespace ExchangeRates.Models
                 return result.Substring(0, result.Length - 1);
             }
             return string.Empty;
-        }
-    }
-
-    public static class EnumExtensions
-    {
-        public static SelectList ToSelectList<TEnum>(this TEnum enumObj)
-            where TEnum : struct, IComparable, IFormattable, IConvertible
-        {
-            var values = from TEnum e in Enum.GetValues(typeof(TEnum))
-                         select new { Id = e, Name = e.ToString() };
-            return new SelectList(values, "Id", "Name", enumObj);
         }
     }
 }

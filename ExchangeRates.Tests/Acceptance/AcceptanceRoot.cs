@@ -1,10 +1,11 @@
 ﻿using Autofac;
 using ExchangeRates.BL.Exceptions;
+using ExchangeRates.DA;
 using ExchangeRates.Models;
 
-namespace ExchangeRates.Tests
+namespace ExchangeRates.Tests.Acceptance
 {
-    public class IntegrationRoot
+    public class AcceptanceRoot
     {
         public IContainer Root { get; private set; }
         
@@ -12,7 +13,7 @@ namespace ExchangeRates.Tests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<BlModule>();
-            builder.RegisterModule<IntegrationDaModule>();
+            builder.RegisterModule<DaModule>();
             builder.RegisterModule<UiModule>();
             Root = builder.Build();
         }
@@ -22,9 +23,9 @@ namespace ExchangeRates.Tests
             return Root.Resolve<ExchangeRatesVm>();
         }
 
-        public IntegrationSessionFactory GetSessionFactory()
+        public ISessionFactory GetSessionFactory()
         {
-            return Root.Resolve<IntegrationSessionFactory>();
+            return Root.Resolve<ISessionFactory>();
         }
 
         public void Release()

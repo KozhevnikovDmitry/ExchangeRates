@@ -7,9 +7,9 @@ namespace ExchangeRates.DA
     internal class Session : DbContext, ISession
     {
         public Session()
-            : base("LocalDBTestContext")
+            : base("ExcnangeRates")
         {
-            
+            Database.CreateIfNotExists();
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -25,7 +25,9 @@ namespace ExchangeRates.DA
 
         public T Save<T>(T entity) where T : class, IEntity
         {
-           return Set<T>().Add(entity);
+            Set<T>().Add(entity);
+            SaveChanges();
+            return entity;
         }
     }
 }

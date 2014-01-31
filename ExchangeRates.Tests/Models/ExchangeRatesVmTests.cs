@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ExchangeRates.BL.Exceptions;
 using ExchangeRates.BL.Interface;
 using ExchangeRates.Models;
 using ExchangeRetes.DM;
@@ -60,40 +59,6 @@ namespace ExchangeRates.Tests.Models
         }
 
         [Test]
-        public void GetRates_EndDateIsEarilerThanStartDate_Test()
-        {
-            // Arrange
-            var exchangeRates = new Mock<IExchangeRates>();
-            exchangeRates.Setup(t => t.GetRates(It.IsAny<Currency>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .Throws<EndDateIsEarilerThanStartDateException>();
-            var vm = new ExchangeRatesVm(exchangeRates.Object);
-
-            // Act
-            vm.GetRates();
-
-            // Assert
-            Assert.False(vm.IsSuccesfull);
-            Assert.AreEqual(vm.ErrorMessage, "Mistyping: End date is earlier than start date.");
-        }
-
-        [Test]
-        public void GetRates_SelectedPeriodExceedTwoMonths_Test()
-        {
-            // Arrange
-            var exchangeRates = new Mock<IExchangeRates>();
-            exchangeRates.Setup(t => t.GetRates(It.IsAny<Currency>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .Throws<SelectedPeriodExceedTwoMonthsException>();
-            var vm = new ExchangeRatesVm(exchangeRates.Object);
-
-            // Act
-            vm.GetRates();
-
-            // Assert
-            Assert.False(vm.IsSuccesfull);
-            Assert.AreEqual(vm.ErrorMessage, "Mistyping: Selected date interval exceeds two months.");
-        }
-
-        [Test]
         public void GetRates_ApplicationException_Test()
         {
             // Arrange
@@ -108,7 +73,7 @@ namespace ExchangeRates.Tests.Models
 
             // Assert
             Assert.False(vm.IsSuccesfull);
-            Assert.AreEqual(vm.ErrorMessage, "Error: Application Exception");
+            Assert.AreEqual(vm.ErrorMessage, "Application Exception");
         }
 
         [Test]
