@@ -38,6 +38,11 @@
                         text: '@Model.Currency.ToString()/USD rates'
                     },
                     xAxis: {
+                        labels :
+                        {
+                            rotation: -90
+                        }
+                        ,
                         categories: [@Html.Raw(Model.GetDays())]
                     },
                     yAxis: {
