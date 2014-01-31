@@ -148,5 +148,31 @@ namespace ExchangeRates.Tests.Acceptance
                 Assert.AreNotEqual(rate.Value, 100500, "Rate value is not equal 100500");
             }
         }
+
+        [Test]
+        public void GetRates_WithoutDb_Test()
+        {
+            // Arrange
+            var exchangeRatesVm = _root.Resolve();
+            exchangeRatesVm.Currency = Currency.GBP;
+            exchangeRatesVm.StartDate = DateTime.Today.AddMonths(-1);
+            exchangeRatesVm.EndDate = DateTime.Today;
+            File.Delete("ExchangeRates.Tests.dll.config");
+
+            // Act
+            exchangeRatesVm.GetRates();
+
+            // Assert
+            for (int i = 0; i < exchangeRatesVm.Rates.Count; i++)
+            {
+                var rate = exchangeRatesVm.Rates[i];
+                Assert.AreEqual(rate.Currency, Currency.GBP, "Rate currency is GBP");
+                Assert.AreEqual(rate.Stamp.Date, DateTime.Today.AddMonths(-1).AddDays(i), "Rate stamp is in last month");
+                Assert.AreNotEqual(rate.Value, 0, "Rate value is not equal zero");
+            }
+
+            Assert.False(exchangeRatesVm.IsSuccesfull, "Getting rates was performed with errors");
+            Assert.IsNotEmpty(exchangeRatesVm.ErrorMessage, "Error message is provided");
+        }
     }
 }

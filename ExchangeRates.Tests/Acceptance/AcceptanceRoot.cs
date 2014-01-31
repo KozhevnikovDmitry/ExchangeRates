@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Configuration;
+using Autofac;
 using ExchangeRates.BL;
 using ExchangeRates.DA;
 using ExchangeRates.Models;
@@ -15,6 +16,7 @@ namespace ExchangeRates.Tests.Acceptance
             builder.RegisterModule<BlModule>();
             builder.RegisterModule<DaModule>();
             builder.RegisterModule<UiModule>();
+            builder.RegisterInstance(new AppId(ConfigurationManager.AppSettings["openexchangerates_appid"]));
             Root = builder.Build();
         }
 

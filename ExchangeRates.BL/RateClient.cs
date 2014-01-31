@@ -6,7 +6,7 @@ using ExchangeRates.BL.Interface;
 
 namespace ExchangeRates.BL
 {
-    internal class AppId
+    public class AppId
     {
         public AppId(string appId)
         {
