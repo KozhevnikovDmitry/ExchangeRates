@@ -23,7 +23,7 @@ namespace ExchangeRates.BL.Tests
         {
             // Arrange
             var rate = Mock.Of<Rate>();
-            var rateResponce = Mock.Of<RateResponce>(t => t.Parse(Currency.RUB) == rate);
+            var rateResponce = Mock.Of<RateSourceData>(t => t.Parse(Currency.RUB) == rate);
             var client = Mock.Of<IRateClient>(t => t.GetRate(DateTime.Today) == rateResponce);
             var rateService = new RateService(client);
 

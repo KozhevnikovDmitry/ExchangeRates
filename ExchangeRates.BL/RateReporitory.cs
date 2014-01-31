@@ -8,8 +8,20 @@ using ExchangeRetes.DM;
 
 namespace ExchangeRates.BL
 {
+    /// <summary>
+    /// Repository for caching rates in datasource 
+    /// </summary>
     public class RateReporitory : IRateRepository
     {
+        /// <summary>
+        /// Return list of early cached rates <paramref name="currency"/> and date interval from <paramref name="startDate"/> to <paramref name="endDate"/> using <paramref name="session"/>
+        /// </summary>
+        /// <param name="session">Datasource session</param>
+        /// <param name="currency">Selected currency</param>
+        /// <param name="startDate">Start date of interval inclusively</param>
+        /// <param name="endDate">End date of interval inclusively</param>
+        /// <exception cref="GetCachedRepositoryException"/>
+        /// <exception cref="ArgumentNullException"/>
         public IList<Rate> GetCached(ISession session, Currency currency, DateTime startDate, DateTime endDate)
         {
             if (session == null)
@@ -36,6 +48,13 @@ namespace ExchangeRates.BL
             }
         }
 
+        /// <summary>
+        /// Caches <paramref name="rates"/> using datasource <paramref name="session"/>
+        /// </summary>
+        /// <param name="session">New rates</param>
+        /// <param name="rates">Datasource session</param>
+        /// <exception cref="CacheRepositoryException"/>
+        /// <exception cref="ArgumentNullException"/>
         public void Cache(ISession session, IEnumerable<Rate> rates)
         {
             if (session == null)

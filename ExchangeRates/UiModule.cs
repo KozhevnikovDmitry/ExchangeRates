@@ -5,7 +5,7 @@ using ExchangeRates.Models;
 namespace ExchangeRates
 {
     /// <summary>
-    /// Autafac module, that collects types from ui assembly <see cref="ExchangeRates"/>
+    /// Autafac module, that collects types from ui assembly ExchangeRates
     /// </summary>
     public class UiModule : Module
     {

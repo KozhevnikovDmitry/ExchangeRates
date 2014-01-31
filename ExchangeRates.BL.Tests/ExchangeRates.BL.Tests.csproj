@@ -55,7 +55,7 @@
     <Compile Include="ExchangeRatesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RateRepositoryTests.cs" />
-    <Compile Include="RateResponceTests.cs" />
+    <Compile Include="RateSourceDataTests.cs" />
     <Compile Include="RateServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>

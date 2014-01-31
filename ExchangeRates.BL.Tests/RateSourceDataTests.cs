@@ -6,20 +6,20 @@ using NUnit.Framework;
 namespace ExchangeRates.BL.Tests
 {
     [TestFixture]
-    public class RateResponceTests
+    public class RateSourceDataTests
     {
         [Test]
         public void Parse_UnixTime_Test()
         {
             // Arrange
-            var rateResponce = new RateResponce
+            var rateSourceData = new RateSourceData
             {
                 Stamp = 0,
-                RateDetail = new RateDetailResponce()
+                RatesValues = new RateValuesData()
             };
 
             // Act
-            var rate = rateResponce.Parse(Currency.RUB);
+            var rate = rateSourceData.Parse(Currency.RUB);
 
             // Assert
             Assert.AreEqual(rate.Stamp.Date, new DateTime(1970, 1, 1, 0, 0, 0));
@@ -33,9 +33,9 @@ namespace ExchangeRates.BL.Tests
         public double Parse_Currency_Test(Currency currency)
         {
             // Arrange
-            var rateResponce = new RateResponce
+            var rateSourceData = new RateSourceData
             {
-                RateDetail = new RateDetailResponce
+                RatesValues = new RateValuesData
                 {
                     EUR = 1,
                     GBP = 2,
@@ -46,7 +46,7 @@ namespace ExchangeRates.BL.Tests
             };
 
             // Act
-            var rate = rateResponce.Parse(currency);
+            var rate = rateSourceData.Parse(currency);
 
             // Assert
             return rate.Value;
@@ -56,10 +56,10 @@ namespace ExchangeRates.BL.Tests
         public void Parse_ThrowsRatesWereNotParsed_OnNullRateDetail_Test()
         {
             // Arrange
-            var rateResponce = new RateResponce();
+            var rateSourceData = new RateSourceData();
 
             // Assert
-            Assert.Throws<RatesWereNotParsedException>(() => rateResponce.Parse(Currency.RUB));
+            Assert.Throws<RatesWereNotParsedException>(() => rateSourceData.Parse(Currency.RUB));
         }
     }
 }

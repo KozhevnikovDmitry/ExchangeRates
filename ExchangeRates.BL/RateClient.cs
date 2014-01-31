@@ -6,26 +6,26 @@ using ExchangeRates.BL.Interface;
 
 namespace ExchangeRates.BL
 {
-    public class AppId
-    {
-        public AppId(string appId)
-        {
-            Value = appId;
-        }
-
-        public string Value { get; set; }
-    }
-
+    /// <summary>
+    /// <see cref="HttpClient"/> adapter, that provides deserialized rate sources from https://openexchangerates.org/
+    /// </summary>
     internal class RateClient : IRateClient
     {
         private readonly AppId _appId;
 
+        /// <summary>
+        /// Constructs example of <see cref="RateClient"/>
+        /// </summary>
+        /// <param name="appId">Access token</param>
         public RateClient(AppId appId)
         {
             _appId = appId;
         }
 
-        public RateResponce GetRate(DateTime date)
+        /// <summary>
+        /// Provides rates source by <paramref name="date"/>
+        /// </summary>
+        public RateSourceData GetRate(DateTime date)
         {
             using (var client = new HttpClient())
             {
@@ -38,7 +38,7 @@ namespace ExchangeRates.BL
                 if (response.IsSuccessStatusCode)
                 {
                     var json = response.Content.ReadAsStreamAsync().Result;
-                    return (RateResponce)new DataContractJsonSerializer(typeof(RateResponce)).ReadObject(json);
+                    return (RateSourceData)new DataContractJsonSerializer(typeof(RateSourceData)).ReadObject(json);
                 }
             }
 

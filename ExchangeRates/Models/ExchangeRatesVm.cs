@@ -18,9 +18,10 @@ namespace ExchangeRates.Models
         private readonly IExchangeRates _exchangeRates;
 
         /// <summary>
-        /// Returns examle of <see cref="ExchangeRatesVm"/>
+        /// Constructs example of <see cref="ExchangeRatesVm"/>
         /// </summary>
         /// <param name="exchangeRates">Provider of exchange rates data</param>
+        /// <exception cref="ArgumentNullException"/>
         public ExchangeRatesVm(IExchangeRates exchangeRates)
         {
             if (exchangeRates == null) 

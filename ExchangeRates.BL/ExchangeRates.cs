@@ -8,29 +8,51 @@ using ExchangeRetes.DM;
 
 namespace ExchangeRates.BL
 {
+    /// <summary>
+    /// Provider of exchange rates data
+    /// </summary>
     internal class ExchangeRates : IExchangeRates
     {
-        private readonly ISessionFactory _sessionFacotry;
-        private readonly IRateRepository _repository;
-        private readonly IRateService _service;
+        private readonly ISessionFactory _sessionFactory;
+        private readonly IRateRepository _rateRepository;
+        private readonly IRateService _rateService;
 
-        public ExchangeRates(ISessionFactory sessionFacotry, IRateRepository repository, IRateService service)
+        /// <summary>
+        /// Counstruts example of <see cref="ExchangeRates"/>
+        /// </summary>
+        /// <param name="sessionFactory">Factory of datasource-sessions</param>
+        /// <param name="rateRepository">Repository of cached rates</param>
+        /// <param name="rateService">Rate remote service</param>
+        /// <exception cref="ArgumentNullException"/>
+        public ExchangeRates(ISessionFactory sessionFactory, IRateRepository rateRepository, IRateService rateService)
         {
-            if (sessionFacotry == null)
-                throw new ArgumentNullException("sessionFacotry");
-            if (repository == null)
-                throw new ArgumentNullException("repository");
-            if (service == null)
-                throw new ArgumentNullException("service");
+            if (sessionFactory == null)
+                throw new ArgumentNullException("sessionFactory");
+            if (rateRepository == null)
+                throw new ArgumentNullException("rateRepository");
+            if (rateService == null)
+                throw new ArgumentNullException("rateService");
 
             ErrorMessage = string.Empty;
-            _sessionFacotry = sessionFacotry;
-            _repository = repository;
-            _service = service;
+            _sessionFactory = sessionFactory;
+            _rateRepository = rateRepository;
+            _rateService = rateService;
         }
 
+        /// <summary>
+        /// Some error information about <see cref="GetRates"/> performing
+        /// </summary>
         public string ErrorMessage { get; private set; }
 
+        /// <summary>
+        /// Returns ordered rates list for <paramref name="currency"/> and date interval from <paramref name="startDate"/> to <paramref name="endDate"/>
+        /// </summary>
+        /// <param name="currency">Selected currency</param>
+        /// <param name="startDate">Start date of interval inclusively</param>
+        /// <param name="endDate">End date of interval inclusively</param>
+        /// <exception cref="GetRatesException"/>
+        /// <exception cref="EndDateIsEarilerThanStartDateException"/>
+        /// <exception cref="SelectedPeriodExceedTwoMonthsException"/>
         public IList<Rate> GetRates(Currency currency, DateTime startDate, DateTime endDate)
         {
             if (startDate.Date > endDate.Date)
@@ -43,11 +65,11 @@ namespace ExchangeRates.BL
                 throw new SelectedPeriodExceedTwoMonthsException();
             }
 
-            var interval = GetInterval(startDate, endDate);
-
             try
             {
-                using (var session = _sessionFacotry.New())
+                var interval = GetInterval(startDate, endDate);
+
+                using (var session = _sessionFactory.New())
                 {
                     var cache = GetCached(currency, startDate, endDate, session);
                     var cachedDays = cache.Select(t => t.Stamp.Date)
@@ -55,10 +77,11 @@ namespace ExchangeRates.BL
                     if (!interval.SequenceEqual(cachedDays))
                     {
                         var external = interval.Except(cachedDays);
-                        var rates = _service.GetRates(currency, external);
+                        var rates = _rateService.GetRates(currency, external);
                         cache = cache.Concat(rates).ToList();
                         CacheRates(session, rates);
                     }
+                    ErrorMessage = string.Empty;
                     return cache.OrderBy(t => t.Stamp).ToList();
                 }
             }
@@ -72,11 +95,14 @@ namespace ExchangeRates.BL
             }
         }
 
+        /// <summary>
+        /// Returns list of cached rates
+        /// </summary>
         private IList<Rate> GetCached(Currency currency, DateTime startDate, DateTime endDate, ISession session)
         {
             try
             {
-                return _repository.GetCached(session, currency, startDate, endDate);
+                return _rateRepository.GetCached(session, currency, startDate, endDate);
             }
             catch (Exception ex)
             {
@@ -85,11 +111,14 @@ namespace ExchangeRates.BL
             }
         }
 
+        /// <summary>
+        /// Caches list of new rates
+        /// </summary>
         private void CacheRates(ISession session, IList<Rate> rates)
         {
             try
             {
-                _repository.Cache(session, rates);
+                _rateRepository.Cache(session, rates);
             }
             catch (Exception ex)
             {
@@ -97,6 +126,9 @@ namespace ExchangeRates.BL
             }
         }
 
+        /// <summary>
+        /// Returns date array, that represents days of interval from <paramref name="startDate"/> to <paramref name="endDate"/>
+        /// </summary>
         private DateTime[] GetInterval(DateTime startDate, DateTime endDate)
         {
             return Enumerable.Range(0, 1 + endDate.Date.Subtract(startDate.Date).Days)
@@ -104,11 +136,14 @@ namespace ExchangeRates.BL
                 .ToArray();
         }
 
-        public double MonthDifference(DateTime start, DateTime end)
+        /// <summary>
+        /// Return differenc between <paramref name="startDate"/> and <paramref name="endDate"/>
+        /// </summary>
+        private double MonthDifference(DateTime startDate, DateTime endDate)
         {
-            int compMonth = (end.Month + end.Year * 12) - (start.Month + start.Year * 12);
-            double daysInEndMonth = (end - end.AddMonths(1)).Days;
-            return compMonth + (start.Day - end.Day) / daysInEndMonth;
+            int compMonth = (endDate.Month + endDate.Year * 12) - (startDate.Month + startDate.Year * 12);
+            double daysInEndMonth = (endDate - endDate.AddMonths(1)).Days;
+            return compMonth + (startDate.Day - endDate.Day) / daysInEndMonth;
         }
     }
 }
