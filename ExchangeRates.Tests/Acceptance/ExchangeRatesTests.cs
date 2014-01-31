@@ -24,15 +24,6 @@ namespace ExchangeRates.Tests.Acceptance
             _root.Release();
         }
 
-        //[SetUp]
-        //public void SetUp()
-        //{
-        //    using (var session = _root.GetSessionFactory().New())
-        //    {
-        //        session.Query<Rate>().ToList();
-        //    }
-        //}
-
         [TearDown]
         public void TearDown()
         {

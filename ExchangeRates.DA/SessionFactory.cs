@@ -1,5 +1,4 @@
 ﻿using System;
-using ExchangeRates.DA.Exceptions;
 
 namespace ExchangeRates.DA
 {
@@ -13,7 +12,7 @@ namespace ExchangeRates.DA
             }
             catch (Exception ex)
             {
-                throw new FailToCreateSessionExcetpion(ex);
+                return new FailngSession(ex);
             }
         }
     }

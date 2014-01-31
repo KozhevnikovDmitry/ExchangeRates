@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\BlModule.cs" />
+    <Compile Include="BlModule.cs" />
     <Compile Include="Exceptions\EndDateIsEarilerThanStartDateException.cs" />
     <Compile Include="Exceptions\GetCachedRepositoryException.cs" />
     <Compile Include="Exceptions\GetRatesFromServiceException.cs" />

@@ -14,6 +14,17 @@ namespace ExchangeRates.BL.Tests
     public class ExchangeRatesTests
     {
         [Test]
+        public void Ctor_EmptyErrorMessage_Test()
+        {
+            // Arrange
+            var exchangeRates = new ExchangeRates(Mock.Of<ISessionFactory>(), Mock.Of<IRateRepository>(),
+                Mock.Of<IRateService>());
+            
+            // Assert
+            Assert.IsEmpty(exchangeRates.ErrorMessage);
+        }
+
+        [Test]
         public void Ctor_ThrowsOnNullSessionFactory_Test()
         {
             // Assert
@@ -211,6 +222,95 @@ namespace ExchangeRates.BL.Tests
             Assert.AreEqual(rates[0], rate1);
             Assert.AreEqual(rates[1], rate2);
             Assert.AreEqual(rates[2], rate3);
+        }
+
+        [Test]
+        public void GetRate_NotThrows_WhenRepositoryGetCachedFails_Test()
+        {
+            // Arrange
+            var session = Mock.Of<ISession>();
+            var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
+            var repository = new Mock<IRateRepository>();
+            repository.Setup(t => t.GetCached(It.IsAny<ISession>(), It.IsAny<Currency>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                      .Throws<Exception>();
+            var rate = Mock.Of<Rate>();
+            var service =
+                Mock.Of<IRateService>(
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new[] { rate });
+            var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
+
+            // Act
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+
+            // Assert
+            Assert.AreEqual(rates.Single(), rate);
+        }
+
+        [Test]
+        public void GetRates_NotThrows_WhenRepositoryCacheFails_Test()
+        {
+            // Arrange
+            var session = Mock.Of<ISession>();
+            var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
+            var repository = new Mock<IRateRepository>();
+            repository.Setup(t => t.GetCached(session, It.IsAny<Currency>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(new Rate[0]);
+            repository.Setup(t => t.Cache(session, It.IsAny<IEnumerable<Rate>>())).Throws<Exception>();
+            var rate = Mock.Of<Rate>();
+            var service =
+                Mock.Of<IRateService>(
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new[] { rate });
+            var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
+
+            // Act
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+
+            // Assert
+            Assert.AreEqual(rates.Single(), rate);
+        }
+
+
+        [Test]
+        public void GetRate_ProvideErrorMessage_WhenRepositoryGetCachedFails_Test()
+        {
+            // Arrange
+            var exception = Mock.Of<Exception>(t => t.Message == "Error message");
+            var session = Mock.Of<ISession>();
+            var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
+            var repository = new Mock<IRateRepository>();
+            repository.Setup(t => t.GetCached(It.IsAny<ISession>(), It.IsAny<Currency>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                      .Throws(exception);
+            var service =
+                Mock.Of<IRateService>(
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new Rate[0]);
+            var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
+
+            // Act
+            exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+
+            // Assert
+            Assert.AreEqual(exchangeRates.ErrorMessage, "Error message");
+        }
+
+        [Test]
+        public void GetRates_ProvideErrorMessage_WhenRepositoryCacheFails_Test()
+        {
+            // Arrange
+            var exception = Mock.Of<Exception>(t => t.Message == "Error message");
+            var session = Mock.Of<ISession>();
+            var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
+            var repository = new Mock<IRateRepository>();
+            repository.Setup(t => t.GetCached(session, It.IsAny<Currency>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(new Rate[0]);
+            repository.Setup(t => t.Cache(session, It.IsAny<IEnumerable<Rate>>())).Throws(exception);
+            var service =
+                Mock.Of<IRateService>(
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new Rate[0]);
+            var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
+
+            // Act
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+
+            // Assert
+            Assert.AreEqual(exchangeRates.ErrorMessage, "Error message");
         }
 
         [Test]

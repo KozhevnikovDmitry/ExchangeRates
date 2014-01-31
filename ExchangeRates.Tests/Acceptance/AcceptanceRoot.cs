@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using ExchangeRates.BL.Exceptions;
+using ExchangeRates.BL;
 using ExchangeRates.DA;
 using ExchangeRates.Models;
 

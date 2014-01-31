@@ -71,6 +71,7 @@
     <Compile Include="Exceptions\FailToCreateSessionExcetpion.cs" />
     <Compile Include="Exceptions\FailToGetDataFromDbExcetpion.cs" />
     <Compile Include="Exceptions\FailToSetupDataToDbExcetpion.cs" />
+    <Compile Include="FailngSession.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISessionFactory.cs" />

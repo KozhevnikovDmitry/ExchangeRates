@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
-using ExchangeRates.BL.Exceptions;
+using ExchangeRates.BL;
 using ExchangeRates.DA;
 
 namespace ExchangeRates

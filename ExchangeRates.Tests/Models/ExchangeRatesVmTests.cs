@@ -59,6 +59,26 @@ namespace ExchangeRates.Tests.Models
         }
 
         [Test]
+        public void GetRates_TranslateNotEmptyErrorMessage_Test()
+        {
+            // Arrange
+            var exchangeRates =
+                Mock.Of<IExchangeRates>(t => t.ErrorMessage == "ErrorMessage");
+            var vm = new ExchangeRatesVm(exchangeRates)
+            {
+                StartDate = new DateTime(),
+                EndDate = new DateTime()
+            };
+
+            // Act
+            vm.GetRates();
+
+            // Assert
+            Assert.False(vm.IsSuccesfull);
+            Assert.AreEqual(vm.ErrorMessage, "ErrorMessage");
+        }
+
+        [Test]
         public void GetRates_ApplicationException_Test()
         {
             // Arrange

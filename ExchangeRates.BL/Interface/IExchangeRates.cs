@@ -7,5 +7,7 @@ namespace ExchangeRates.BL.Interface
     public interface IExchangeRates
     {
         IList<Rate> GetRates(Currency currency, DateTime startDate, DateTime endDate);
+
+        string ErrorMessage { get; }
     }
 }

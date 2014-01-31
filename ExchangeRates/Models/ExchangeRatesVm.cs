@@ -59,8 +59,17 @@ namespace ExchangeRates.Models
                 }
 
                 Rates = _exchangeRates.GetRates(Currency, StartDate.Value, EndDate.Value);
-                IsSuccesfull = true;
-                ErrorMessage = string.Empty;
+
+                if (string.IsNullOrEmpty(_exchangeRates.ErrorMessage))
+                {
+                    IsSuccesfull = true;
+                    ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    IsSuccesfull = false;
+                    ErrorMessage = _exchangeRates.ErrorMessage;
+                }
             }
             catch (ApplicationException ex)
             {
