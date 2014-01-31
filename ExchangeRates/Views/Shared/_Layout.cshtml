@@ -1,40 +1,21 @@
 ﻿@using System.Web.Optimization
-@*@using System.Web.Optimization
-
-<html>
-
-<body>
-    <div class="container wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">ExchangeRates</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="hero-unit" style="margin-top: 30px">
-           @RenderBody()
-        </div>
-    </div>
-    <div class="footer">
-        <div class="container">
-            <p class="muted">
-                <a href="mailto:d.o.kozhevnikov@gmail.com">"Kozhevnikov Dmitry"</a>
-            </p>
-        </div>
-    </div>
-</body>
-</html>*@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <title>ExchangeRates</title>
-    <meta name="viewport" content="width=device-width" />
-    @Scripts.Render("~/Scripts/all")
-    @Styles.Render("~/Content/all")
+    <meta name="viewport" content="width=device-width" />    @Styles.Render("~/Content/all")
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <link href="../../Content/layout.css" rel="stylesheet">
+    <script>
+        $(function () {
+            $(".datepicker").datepicker({ dateFormat: "dd.mm.yy" });
+        });
+  </script>
 </head>
 
 <body>
@@ -55,7 +36,7 @@
 
     <div id="footer">
         <div class="container">
-            <a href="mailto:d.o.kozhevnikov@gmail.com">Kozhevnikov Dmitry</a>
+            Kozhevnikov Dmitry, <a href="mailto:d.o.kozhevnikov@gmail.com">d.o.kozhevnikov@gmail.com</a>
         </div>
     </div>
 

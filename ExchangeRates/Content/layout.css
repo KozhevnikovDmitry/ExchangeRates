@@ -8,13 +8,13 @@
     min-height: 100%;
     height: auto !important;
     height: 100%;
-    margin: 0 auto -60px;
+    margin: 0 auto -80px;
     margin-top: 50px;
 }
 
 #push, #footer
 {
-    height: 60px;
+    height: 80px;
 }
 
 #footer
@@ -28,15 +28,15 @@
     max-width: 680px;
 }
 
-    .container .credit
-    {
-        margin: 20px 0;
-    }
+.container .credit
+{
+    margin: 20px 0;
+}
 
-    .form-label {
-        width: 80px;
-    }
+.form-label {
+    width: 80px;
+}
     
-    .form-edit {
-        margin-right: 5px;
-    }
+.form-edit {
+    margin-right: 5px;
+}
