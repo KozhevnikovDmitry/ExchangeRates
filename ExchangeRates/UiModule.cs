@@ -4,6 +4,9 @@ using ExchangeRates.Models;
 
 namespace ExchangeRates
 {
+    /// <summary>
+    /// Autafac module, that collects types from ui assembly <see cref="ExchangeRates"/>
+    /// </summary>
     public class UiModule : Module
     {
         protected override void Load(ContainerBuilder builder)

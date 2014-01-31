@@ -7,8 +7,14 @@ using ExchangeRates.DA;
 
 namespace ExchangeRates
 {
-    public class Root
+    /// <summary>
+    /// Dependency root
+    /// </summary>
+    public static class Root
     {
+        /// <summary>
+        /// Collects types from all layers. Initializes mvc <see cref="DependencyResolver"/>
+        /// </summary>
         public static void Collect()
         {
             var builder = new ContainerBuilder();

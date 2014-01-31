@@ -7,10 +7,20 @@ using ExchangeRetes.DM;
 
 namespace ExchangeRates.Models
 {
+    /// <summary>
+    /// ViewModel, that provides exchange rates reports data by date interval and currency
+    /// </summary>
     public class ExchangeRatesVm
     {
+        /// <summary>
+        /// Provider of exchange rates data
+        /// </summary>
         private readonly IExchangeRates _exchangeRates;
 
+        /// <summary>
+        /// Returns examle of <see cref="ExchangeRatesVm"/>
+        /// </summary>
+        /// <param name="exchangeRates">Provider of exchange rates data</param>
         public ExchangeRatesVm(IExchangeRates exchangeRates)
         {
             if (exchangeRates == null) 
@@ -23,6 +33,9 @@ namespace ExchangeRates.Models
             EndDate = DateTime.Today;
             CurrencyList = Currency.RUB.ToSelectList();
         }
+        
+
+        #region Input
 
         public SelectList CurrencyList { get; set; }
 
@@ -39,11 +52,30 @@ namespace ExchangeRates.Models
         [Required(ErrorMessage = "Enter end date")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}")]
         public DateTime? EndDate { get; set; }
+        
+        #endregion
 
+
+        #region Output
+
+        /// <summary>
+        /// Result rate list
+        /// </summary>
         public IList<Rate> Rates { get; set; }
+
+        /// <summary>
+        /// Returns true if <see cref="GetRates"/> was performed without error
+        /// </summary>
         public bool IsSuccesfull { get; set; }
+
+        /// <summary>
+        /// Some error information about <see cref="GetRates"/> performing
+        /// </summary>
         public string ErrorMessage { get; set; }
 
+        /// <summary>
+        /// Provides rate list to the <see cref="Rates"/> using input <see cref="StartDate"/>, <see cref="EndDate"/> and <see cref="Currency"/>
+        /// </summary>
         public void GetRates()
         {
             try
@@ -58,6 +90,7 @@ namespace ExchangeRates.Models
                     throw new ApplicationException("Error: End date must have value");
                 }
 
+                // Getting rates here
                 Rates = _exchangeRates.GetRates(Currency, StartDate.Value, EndDate.Value);
 
                 if (string.IsNullOrEmpty(_exchangeRates.ErrorMessage))
@@ -85,6 +118,9 @@ namespace ExchangeRates.Models
             }
         }
 
+        /// <summary>
+        /// Returns strigified view of input date interval days.
+        /// </summary>
         public string GetDays()
         {
             if (Rates != null)
@@ -98,7 +134,10 @@ namespace ExchangeRates.Models
             }
             return string.Empty;
         }
-        
+
+        /// <summary>
+        /// Returns strigified view of result rates.
+        /// </summary>
         public string GetRatesData()
         {
             if (Rates != null)
@@ -113,5 +152,7 @@ namespace ExchangeRates.Models
             }
             return string.Empty;
         }
+
+        #endregion
     }
 }
