@@ -137,6 +137,8 @@
     <Compile Include="Controllers\ExchangeRateController.cs" />
     <Compile Include="ModelBinder.cs" />
     <Compile Include="Models\EnumExtensions.cs" />
+    <Compile Include="Models\Exceptions\FailToResolveViewModelException.cs" />
+    <Compile Include="Models\Exceptions\UnexpectedViewModelException.cs" />
     <Compile Include="Models\ExchangeRatesVm.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

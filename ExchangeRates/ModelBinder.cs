@@ -1,8 +1,10 @@
 using System;
 using System.Web.Mvc;
 using Autofac;
+using Autofac.Core;
 using Autofac.Integration.Mvc;
 using ExchangeRates.Models;
+using ExchangeRates.Models.Exceptions;
 
 namespace ExchangeRates
 {
@@ -13,12 +15,27 @@ namespace ExchangeRates
 
         public ModelBinder(IComponentContext componentContext)
         {
-            this._componentContext = componentContext;
+            _componentContext = componentContext;
         }
 
         protected override object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, Type modelType)
         {
-            return this._componentContext.Resolve(modelType);
+            try
+            {
+                return _componentContext.Resolve(modelType);
+            }
+            catch (ApplicationException)
+            {
+                throw;
+            }
+            catch (DependencyResolutionException ex)
+            {
+                throw new FailToResolveViewModelException(ex);
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedViewModelException(ex);
+            }
         }
     }
 }
