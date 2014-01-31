@@ -81,7 +81,6 @@ namespace ExchangeRates.BL
                         cache = cache.Concat(rates).ToList();
                         CacheRates(session, rates);
                     }
-                    ErrorMessage = string.Empty;
                     return cache.OrderBy(t => t.Stamp).ToList();
                 }
             }
