@@ -5,10 +5,17 @@ using ExchangeRetes.DM;
 
 namespace ExchangeRates.DA
 {
+    /// <summary>
+    /// Session, that represents unaccessible datasource 
+    /// </summary>
     internal class FailngSession : ISession
     {
         private readonly Exception _ex;
 
+        /// <summary>
+        /// Constructs example of <see cref="FailngSession"/>
+        /// </summary>
+        /// <param name="ex">Access error exception</param>
         public FailngSession(Exception ex)
         {
             _ex = ex;

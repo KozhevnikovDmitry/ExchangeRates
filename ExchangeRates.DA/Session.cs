@@ -6,6 +6,9 @@ using ExchangeRetes.DM;
 
 namespace ExchangeRates.DA
 {
+    /// <summary>
+    /// EF-dbcontext for ExcnangeRates database
+    /// </summary>
     internal class Session : DbContext, ISession
     {
         public Session()
@@ -14,12 +17,19 @@ namespace ExchangeRates.DA
             Database.CreateIfNotExists();
         }
 
+        /// <summary>
+        /// Register mappings 
+        /// </summary>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Rate>()
                 .HasKey(t => new { t.Currency, t.Stamp });
         }
 
+        /// <summary>
+        /// Returns query of <see cref="T"/> entities
+        /// </summary>
+        /// <exception cref="FailToGetDataFromDbExcetpion"/>
         public IQueryable<T> Query<T>() where T : class, IEntity
         {
             try
@@ -32,6 +42,10 @@ namespace ExchangeRates.DA
             }
         }
 
+        /// <summary>
+        /// Saves <paramref name="entity"/> data to database, returns saved entity.
+        /// </summary>
+        /// <exception cref="FailToSetupDataToDbExcetpion"/>
         public T Save<T>(T entity) where T : class, IEntity
         {
             try

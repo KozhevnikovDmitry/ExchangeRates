@@ -6,6 +6,9 @@ using NUnit.Framework;
 
 namespace ExchangeRates.Tests.Acceptance
 {
+    /// <summary>
+    /// Acceptance tests for ExchangeRates application logic
+    /// </summary>
     [TestFixture]
     public class ExchangeRatesTests
     {
@@ -150,13 +153,15 @@ namespace ExchangeRates.Tests.Acceptance
         }
 
         [Test]
-        public void GetRates_WithoutDb_Test()
+        public void GetRatesToVm_WithoutDb_Test()
         {
             // Arrange
             var exchangeRatesVm = _root.Resolve();
             exchangeRatesVm.Currency = Currency.GBP;
             exchangeRatesVm.StartDate = DateTime.Today.AddMonths(-1);
             exchangeRatesVm.EndDate = DateTime.Today;
+
+            // Corrupt db-connection config
             File.Delete("ExchangeRates.Tests.dll.config");
 
             // Act

@@ -6,6 +6,9 @@ using ExchangeRates.Models;
 
 namespace ExchangeRates.Tests.Acceptance
 {
+    /// <summary>
+    /// Dependency root fo acceptance tests
+    /// </summary>
     public class AcceptanceRoot
     {
         public IContainer Root { get; private set; }
