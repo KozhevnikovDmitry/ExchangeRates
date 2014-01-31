@@ -55,6 +55,11 @@ namespace ExchangeRates.BL
         /// <exception cref="SelectedPeriodExceedTwoMonthsException"/>
         public IList<Rate> GetRates(Currency currency, DateTime startDate, DateTime endDate)
         {
+            if (endDate.Date > DateTime.Today)
+            {
+                throw new EndDateIsLaterThanTodayException();
+            }
+
             if (startDate.Date > endDate.Date)
             {
                 throw new EndDateIsEarilerThanStartDateException();

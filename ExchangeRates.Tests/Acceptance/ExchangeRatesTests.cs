@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Autofac;
+using ExchangeRates.DA;
 using ExchangeRetes.DM;
+using Moq;
 using NUnit.Framework;
 
 namespace ExchangeRates.Tests.Acceptance
@@ -156,13 +159,16 @@ namespace ExchangeRates.Tests.Acceptance
         public void GetRatesToVm_WithoutDb_Test()
         {
             // Arrange
+            
+            // Corrupt db-connection
+            var contanerBuilder = new ContainerBuilder();
+            contanerBuilder.RegisterInstance(Mock.Of<ISessionFactory>()).AsSelf().AsImplementedInterfaces();
+            contanerBuilder.Update(_root.Root);
+
             var exchangeRatesVm = _root.Resolve();
             exchangeRatesVm.Currency = Currency.GBP;
             exchangeRatesVm.StartDate = DateTime.Today.AddMonths(-1);
             exchangeRatesVm.EndDate = DateTime.Today;
-
-            // Corrupt db-connection config
-            File.Delete("ExchangeRates.Tests.dll.config");
 
             // Act
             exchangeRatesVm.GetRates();

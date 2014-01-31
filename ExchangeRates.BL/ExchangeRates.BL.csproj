@@ -59,6 +59,7 @@
     <Compile Include="AppId.cs" />
     <Compile Include="BlModule.cs" />
     <Compile Include="Exceptions\EndDateIsEarilerThanStartDateException.cs" />
+    <Compile Include="Exceptions\EndDateIsLaterThanTodayException.cs" />
     <Compile Include="Exceptions\GetCachedRepositoryException.cs" />
     <Compile Include="Exceptions\GetRatesFromServiceException.cs" />
     <Compile Include="Exceptions\CacheRepositoryException.cs" />

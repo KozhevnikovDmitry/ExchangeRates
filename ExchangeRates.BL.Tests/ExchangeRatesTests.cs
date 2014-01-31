@@ -57,6 +57,19 @@ namespace ExchangeRates.BL.Tests
             // Assert
             Assert.Throws<EndDateIsEarilerThanStartDateException>(() => exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(1), DateTime.Today));
         }
+        
+        [Test]
+        public void GetRates_EndDateIsLaterThanToday_Test()
+        {
+            // Arrange
+            var sessionFacotry = Mock.Of<ISessionFactory>();
+            var repository = Mock.Of<IRateRepository>();
+            var service = Mock.Of<IRateService>();
+            var exchangeRates = new ExchangeRates(sessionFacotry, repository, service);
+
+            // Assert
+            Assert.Throws<EndDateIsLaterThanTodayException>(() => exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1)));
+        }
 
         [Test]
         public void GetRates_SelectedPeriodExceedTwoMonths_Test()
@@ -68,7 +81,7 @@ namespace ExchangeRates.BL.Tests
             var exchangeRates = new ExchangeRates(sessionFacotry, repository, service);
 
             // Assert
-            Assert.Throws<SelectedPeriodExceedTwoMonthsException>(() => exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(100)));
+            Assert.Throws<SelectedPeriodExceedTwoMonthsException>(() => exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-100), DateTime.Today));
         }
 
         [Test]
@@ -83,7 +96,7 @@ namespace ExchangeRates.BL.Tests
             var exchangeRates = new ExchangeRates(sessionFacotry.Object, repository, service);
 
             // Assert
-            var ex = Assert.Throws<ApplicationException>(() => exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1)));
+            var ex = Assert.Throws<ApplicationException>(() => exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today));
             Assert.AreEqual(ex, exception);
         }
 
@@ -101,7 +114,7 @@ namespace ExchangeRates.BL.Tests
             // Assert
             var ex =
                 Assert.Throws<GetRatesException>(
-                    () => exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1)));
+                    () => exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today));
             Assert.AreEqual(ex.InnerException, exception);
         }
 
@@ -118,11 +131,11 @@ namespace ExchangeRates.BL.Tests
             var rate = Mock.Of<Rate>();
             var service =
                 Mock.Of<IRateService>(
-                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new[] { rate });
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today.AddDays(-1)) && e.Contains(DateTime.Today))) == new[] { rate });
             var exchangeRates = new ExchangeRates(sessionFacotry, repository, service);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             Assert.AreEqual(rates.Single(), rate);
@@ -140,11 +153,11 @@ namespace ExchangeRates.BL.Tests
             var rate = Mock.Of<Rate>();
             var service =
                 Mock.Of<IRateService>(
-                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new[] { rate });
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today.AddDays(-1)) && e.Contains(DateTime.Today))) == new[] { rate });
             var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
 
             // Act
-            exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             repository.Verify(t => t.Cache(session, It.Is<IEnumerable<Rate>>(e => e.Single() == rate)));
@@ -156,17 +169,17 @@ namespace ExchangeRates.BL.Tests
             // Arrange
             var session = Mock.Of<ISession>();
             var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
-            var rate1 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today);
-            var rate2 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today.AddDays(1));
+            var rate1 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today.AddDays(-1));
+            var rate2 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today);
             var repository =
                 Mock.Of<IRateRepository>(
                     t =>
-                        t.GetCached(session, It.IsAny<Currency>(), DateTime.Today, DateTime.Today.AddDays(1)) == new[] { rate2, rate1 });
+                        t.GetCached(session, It.IsAny<Currency>(), DateTime.Today.AddDays(-1), DateTime.Today) == new[] { rate2, rate1 });
             var service = new Mock<IRateService>();
             var exchangeRates = new ExchangeRates(sessionFacotry, repository, service.Object);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             Assert.AreEqual(rates.First(), rate1);
@@ -181,17 +194,17 @@ namespace ExchangeRates.BL.Tests
             var now = DateTime.Now;
             var session = Mock.Of<ISession>();
             var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
-            var rate1 = Mock.Of<Rate>(t => t.Stamp == now);
-            var rate2 = Mock.Of<Rate>(t => t.Stamp == now.AddDays(1));
+            var rate1 = Mock.Of<Rate>(t => t.Stamp == now.AddDays(-1));
+            var rate2 = Mock.Of<Rate>(t => t.Stamp == now);
             var repository =
                 Mock.Of<IRateRepository>(
                     t =>
-                        t.GetCached(session, It.IsAny<Currency>(), now, now.AddDays(1)) == new[] { rate2, rate1 });
+                        t.GetCached(session, It.IsAny<Currency>(), now.AddDays(-1), now) == new[] { rate2, rate1 });
             var service = new Mock<IRateService>();
             var exchangeRates = new ExchangeRates(sessionFacotry, repository, service.Object);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, now, now.AddDays(1));
+            var rates = exchangeRates.GetRates(Currency.RUB, now.AddDays(-1), now);
 
             // Assert
             Assert.AreEqual(rates.First(), rate1);
@@ -205,18 +218,18 @@ namespace ExchangeRates.BL.Tests
             // Arrange
             var session = Mock.Of<ISession>();
             var sessionFacotry = Mock.Of<ISessionFactory>(t => t.New() == session);
-            var rate1 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today);
-            var rate2 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today.AddDays(1));
-            var rate3 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today.AddDays(2));
+            var rate1 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today.AddDays(-2));
+            var rate2 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today.AddDays(-1));
+            var rate3 = Mock.Of<Rate>(t => t.Stamp == DateTime.Today);
             var repository =
                 Mock.Of<IRateRepository>(
                     t =>
-                        t.GetCached(session, It.IsAny<Currency>(), DateTime.Today, DateTime.Today.AddDays(2)) == new[] { rate1, rate3 });
-            var service = Mock.Of<IRateService>(t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Single() == DateTime.Today.AddDays(1))) == new[] { rate2});
+                        t.GetCached(session, It.IsAny<Currency>(), DateTime.Today.AddDays(-2), DateTime.Today) == new[] { rate1, rate3 });
+            var service = Mock.Of<IRateService>(t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Single() == DateTime.Today.AddDays(-1))) == new[] { rate2});
             var exchangeRates = new ExchangeRates(sessionFacotry, repository, service);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(2));
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-2), DateTime.Today);
 
             // Assert
             Assert.AreEqual(rates[0], rate1);
@@ -236,11 +249,11 @@ namespace ExchangeRates.BL.Tests
             var rate = Mock.Of<Rate>();
             var service =
                 Mock.Of<IRateService>(
-                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new[] { rate });
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today.AddDays(-1)) && e.Contains(DateTime.Today))) == new[] { rate });
             var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             Assert.AreEqual(rates.Single(), rate);
@@ -258,11 +271,11 @@ namespace ExchangeRates.BL.Tests
             var rate = Mock.Of<Rate>();
             var service =
                 Mock.Of<IRateService>(
-                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new[] { rate });
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today.AddDays(-1)) && e.Contains(DateTime.Today))) == new[] { rate });
             var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             Assert.AreEqual(rates.Single(), rate);
@@ -281,11 +294,11 @@ namespace ExchangeRates.BL.Tests
                       .Throws(exception);
             var service =
                 Mock.Of<IRateService>(
-                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new Rate[0]);
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today.AddDays(-1)) && e.Contains(DateTime.Today))) == new Rate[0]);
             var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
 
             // Act
-            exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             Assert.AreEqual(exchangeRates.ErrorMessage, "Error message");
@@ -303,11 +316,11 @@ namespace ExchangeRates.BL.Tests
             repository.Setup(t => t.Cache(session, It.IsAny<IEnumerable<Rate>>())).Throws(exception);
             var service =
                 Mock.Of<IRateService>(
-                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today) && e.Contains(DateTime.Today.AddDays(1)))) == new Rate[0]);
+                    t => t.GetRates(Currency.RUB, It.Is<IEnumerable<DateTime>>(e => e.Contains(DateTime.Today.AddDays(-1)) && e.Contains(DateTime.Today))) == new Rate[0]);
             var exchangeRates = new ExchangeRates(sessionFacotry, repository.Object, service);
 
             // Act
-            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today, DateTime.Today.AddDays(1));
+            var rates = exchangeRates.GetRates(Currency.RUB, DateTime.Today.AddDays(-1), DateTime.Today);
 
             // Assert
             Assert.AreEqual(exchangeRates.ErrorMessage, "Error message");
