@@ -1,5 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Linq;
+using ExchangeRates.DA.Exceptions;
 using ExchangeRetes.DM;
 
 namespace ExchangeRates.DA
@@ -20,14 +22,28 @@ namespace ExchangeRates.DA
 
         public IQueryable<T> Query<T>() where T : class, IEntity
         {
-            return Set<T>();
+            try
+            {
+                return Set<T>();
+            }
+            catch (Exception ex)
+            {
+                throw new FailToGetDataFromDbExcetpion(ex);
+            }
         }
 
         public T Save<T>(T entity) where T : class, IEntity
         {
-            Set<T>().Add(entity);
-            SaveChanges();
-            return entity;
+            try
+            {
+                Set<T>().Add(entity);
+                SaveChanges();
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw new FailToSetupDataToDbExcetpion(ex);
+            }
         }
     }
 }

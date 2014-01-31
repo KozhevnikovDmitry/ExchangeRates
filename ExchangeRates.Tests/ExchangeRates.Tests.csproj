@@ -93,10 +93,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ExchangeRates.DA\App.config">
-      <Link>App.config</Link>
-    </None>
     <None Include="packages.config" />
+    <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -66,7 +66,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\DaException.cs" />
     <Compile Include="DaModule.cs" />
+    <Compile Include="Exceptions\FailToCreateSessionExcetpion.cs" />
+    <Compile Include="Exceptions\FailToGetDataFromDbExcetpion.cs" />
+    <Compile Include="Exceptions\FailToSetupDataToDbExcetpion.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="ISession.cs" />
     <Compile Include="ISessionFactory.cs" />
@@ -80,11 +84,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
+    <None Include="Web.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
